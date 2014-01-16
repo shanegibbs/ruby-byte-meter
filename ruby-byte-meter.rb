@@ -3,10 +3,10 @@
 require 'snmp'
 require 'optparse'
 
-options = {:host => nil, :interface => 3, :step => 5}
+options = {:host => nil, :interface => 3, :step => 1}
 
 parser = OptionParser.new do|opts|
-	opts.banner = "Usage: test.rb [options]"
+	opts.banner = 'Usage: ruby-byte-meter.rb [options]'
 	opts.on('-t', '--target IP', 'Target host ip address') do |host|
 		options[:host] = host;
 	end
@@ -20,24 +20,28 @@ parser = OptionParser.new do|opts|
 	end
 
 	opts.on('-h', '--help', 'Displays Help') do
-		puts opts
+    puts opts
 		exit
 	end
 end
 
 parser.parse!
 
-raise OptionParser::MissingArgument if options[:host].nil?
+if options[:host].nil?
+  $stderr.puts 'Missing target parameter'
+  $stderr.puts parser
+  exit -1
+end
 
 puts "Using host #{options[:host]}"
-puts "All metrics are in bytes"
+puts 'All metrics are in bytes'
 puts
 
-def getCounter(host, i)
+def get_counter(host, i)
   begin
     SNMP::Manager.open(:Host => host) do |snmp|
       arr = Array.new
-      response = snmp.get(["IF-MIB::ifInOctets.#{i}", "IF-MIB::ifOutOctets.#{i}"])
+      response = snmp.get(%w(IF-MIB::ifInOctets.#{i} IF-MIB::ifOutOctets.#{i}))
       response.each_varbind {|vb| arr.push vb.value.to_i}
       
       total = 0
@@ -60,43 +64,44 @@ end
 interface = 3
 
 t = Time.now.to_ms
-counter = getCounter(options[:host], interface)
-startCounter = counter
+counter = get_counter(options[:host], interface)
+start_counter = counter
+counter_last = counter
 
 running = true
 while running do
-	tLast = t;
+	t_last = t
 	t = Time.now.to_ms
-	tDiff = t - tLast
+	t_diff = t - t_last
 	
 	if !counter.nil?
-  	counterLast = counter
+  	counter_last = counter
 	end
 	
-	counter = getCounter(options[:host], interface)
-	if !counter.nil? and !counterLast.nil?
-	  diff = counter - counterLast
+	counter = get_counter(options[:host], interface)
+	if !counter.nil? and !counter_last.nil?
+	  diff = counter - counter_last
     
 	  str = (diff).to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
 	  
-	  bps = diff.to_f / (tDiff.to_f / 1000.0)
+	  bps = diff.to_f / (t_diff.to_f / 1000.0)
 	  kbps = (bps / 1024.0)
-	  kbpsStr = kbps.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+	  kbps_str = kbps.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
 	  
-	  barMaxSize = 50;
-	  barTopMark = 1000 # (in KB)
+	  bar_max_size = 50
+	  bar_top_mark = 1000 # (in KB)
 	  
-	  barSize = ((kbps / barTopMark) * barMaxSize).to_i
-	  barSize = [0, [barSize, barMaxSize].min].max
+	  bar_size = ((kbps / bar_top_mark) * bar_max_size).to_i
+	  bar_size = [0, [bar_size, bar_max_size].min].max
 	  
-	  bar = "|".ljust barSize, "-"
-	  bar += ">" if barSize > 0 and barSize < barMaxSize
-	  bar = bar.ljust(barMaxSize) + "|"
+	  bar = '|'.ljust bar_size, '-'
+	  bar += '>' if bar_size > 0 and bar_size < bar_max_size
+	  bar = bar.ljust(bar_max_size) + '|'
 
-	  untilNow = ((counter - startCounter) / 1024.0 / 1024.0)
+	  until_now = ((counter - start_counter) / 1024.0 / 1024.0)
 	  	.to_i.to_s.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
 	  
-	  print "#{kbpsStr.rjust(20)} KB/s #{bar} #{untilNow} MB total\n"
+	  print "#{kbps_str.rjust(20)} KB/s #{bar} #{until_now} MB total\n"
 	end
   
   begin
