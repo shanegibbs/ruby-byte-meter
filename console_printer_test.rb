@@ -17,7 +17,6 @@ class ConsolePrinterTest < Minitest::Test
     expected = '       500 KB/s |---->    |'
     actual = @under_test.build_speed_string 500.0
 
-    puts actual
     assert_equal expected, actual
 
   end
