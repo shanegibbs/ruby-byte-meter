@@ -10,7 +10,7 @@ class CliOptions
     options.step = 1
 
     opt_parser = OptionParser.new do|opts|
-      opts.banner = 'Usage: ruby-byte-meter.rb [options]'
+      opts.banner = 'Usage: rbm.rb [options]'
 
       opts.separator ''
       opts.separator 'NOTE: All metrics displayed are in bytes'
