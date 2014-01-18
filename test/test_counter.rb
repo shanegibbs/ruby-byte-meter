@@ -1,14 +1,14 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 
-require 'counter'
+require 'rbm'
 
 class CounterTest < Minitest::Unit::TestCase
 
   def test_exception_if_no_override
 
     assert_raises RuntimeError do
-      Counter.new.get_value
+      RubyByteMeter::Counter.new.get_value
     end
 
   end

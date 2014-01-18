@@ -1,12 +1,12 @@
 require 'minitest/autorun'
 require 'minitest/pride'
 
-require 'console_printer'
+require 'rbm'
 
 class ConsolePrinterTest < Minitest::Unit::TestCase
 
   def setup
-    @under_test = ConsolePrinter.new 10, 1000
+    @under_test = RubyByteMeter::ConsolePrinter.new 10, 1000
     @under_test.left_pad_speed = 10
   end
 
