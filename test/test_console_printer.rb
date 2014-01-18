@@ -1,8 +1,9 @@
 require 'minitest/autorun'
+require 'minitest/pride'
 
-require_relative 'console_printer'
+require 'console_printer'
 
-class ConsolePrinterTest < Minitest::Test
+class ConsolePrinterTest < Minitest::Unit::TestCase
 
   def setup
     @under_test = ConsolePrinter.new 10, 1000

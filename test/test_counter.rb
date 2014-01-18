@@ -1,8 +1,9 @@
 require 'minitest/autorun'
+require 'minitest/pride'
 
-require_relative 'counter'
+require 'counter'
 
-class CounterTest < Minitest::Test
+class CounterTest < Minitest::Unit::TestCase
 
   def test_exception_if_no_override
 
