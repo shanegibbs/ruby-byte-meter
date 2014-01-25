@@ -14,7 +14,7 @@ module RubyByteMeter::App
       puts "Using host #{options[:host]}"
       puts
 
-      interface = 3
+      interface = 6
 
       counter = RubyByteMeter::SnmpCounter.new options[:host], interface
 

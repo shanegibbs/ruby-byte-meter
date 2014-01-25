@@ -8,7 +8,7 @@ module RubyByteMeter
     def self.parse(args)
       options = OpenStruct.new
       options.host = nil
-      options.interface = 3
+      options.interface = 6
       options.step = 1
 
       opt_parser = OptionParser.new do |opts|
@@ -23,7 +23,7 @@ module RubyByteMeter
           options.host = host;
         end
 
-        opts.on('-i', '--interface INDEX', 'Interface index (default: 3)') do |interface|
+        opts.on('-i', '--interface INDEX', 'Interface index (default: 6)') do |interface|
           options.interface = interface;
         end
 
